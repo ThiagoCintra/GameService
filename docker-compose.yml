@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  localstack:
+    image: localstack/localstack:1.4
+    environment:
+      - SERVICES=sqs
+      - DEBUG=1
+    ports:
+      - "4566:4566"
+
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  game-service:
+    build: .
+    image: game-service:latest
+    depends_on:
+      - localstack
+      - mongo
+    environment:
+      - AWS_ENDPOINT=http://localstack:4566
+      - AWS_REGION=us-east-1
+      - SQS_QUEUE_URL=http://localstack:4566/000000000000/transactions
+      - SPRING_DATA_MONGODB_HOST=mongo
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge

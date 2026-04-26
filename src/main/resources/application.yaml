@@ -1,0 +1,63 @@
+
+spring:
+  application:
+    name: game-service
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: default
+    mongodb:
+      host: localhost
+      port: 27017
+      database: game_db
+  main:
+    web-application-type: none
+  datasource:
+    url: jdbc:h2:mem:game_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+
+server:
+  port: 0
+
+aws:
+  sqs:
+    queue-url: ${SQS_QUEUE_URL:http://localhost:4566/000000000000/transactions}
+    dlq-url: ${SQS_DLQ_URL:http://localhost:4566/000000000000/transactions-dlq}
+    region: ${AWS_REGION:us-east-1}
+    endpoint: ${AWS_ENDPOINT:http://localhost:4566}
+  access-key-id: ${AWS_ACCESS_KEY_ID:test}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY:test}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+logging:
+  level:
+    com.gameservice: INFO
+
+app:
+  sqs:
+    poll-interval-ms: 500
+    max-messages: 10
+    wait-time-seconds: 20
+    max-receive-count: 5
+  threads:
+    virtual:
+      enabled: true
+  worker:
+    enabled: true
