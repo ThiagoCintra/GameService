@@ -98,9 +98,9 @@ log "Creating SQS queues (idempotent)..."
 bash "$SCRIPT_DIR/create_queues.sh" || log "Queue creation finished (duplicates ignored)."
 
 # ── 5. Start GameService ─────────────────────────────────────────────────────
+mkdir -p "$PROJECT_DIR/logs"
 log "Starting GameService on port 8082..."
 nohup java -jar "$JAR_FILE" \
-  --server.port=8082 \
   > "$PROJECT_DIR/logs/game-service.log" 2>&1 &
 GAME_PID=$!
 echo "$GAME_PID" > "$PROJECT_DIR/logs/game-service.pid"
@@ -108,7 +108,6 @@ log "GameService PID: $GAME_PID"
 
 # ── 6. Health check ──────────────────────────────────────────────────────────
 log "Waiting for GameService health endpoint..."
-mkdir -p "$PROJECT_DIR/logs"
 for i in $(seq 1 30); do
   if curl -sf http://localhost:8082/actuator/health > /dev/null 2>&1; then
     STATUS=$(curl -sf http://localhost:8082/actuator/health | grep -o '"status":"[^"]*"' | head -1)
