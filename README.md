@@ -1,15 +1,16 @@
 GameService
 ===========
 
-Worker-only microservice that consumes TransactionEvent messages from SQS and applies gamification rules.
+Worker microservice that consumes TransactionEvent messages from SQS and applies gamification rules.
+Exposes actuator health/metrics endpoints on port **8082**.
 
 Quickstart
 ----------
 
-1. Build
+1. Build (requires Java 21)
 
 ```bash
-cd /path/to/GameService
+export JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64   # adjust path as needed
 mvn -DskipTests package
 ```
 
@@ -17,19 +18,14 @@ mvn -DskipTests package
 
 ```bash
 docker compose up -d localstack mongo redis
-# wait for localstack to be ready
+# LocalStack init script auto-creates the SQS queues
 ```
 
-3. Create queues in LocalStack
-
-```bash
-./scripts/create_queues.sh
-```
-
-4. Run the service
+3. Run the service
 
 ```bash
 java -jar target/game-service-0.0.1-SNAPSHOT.jar
+# Health check: curl http://localhost:8082/actuator/health
 ```
 
 Or with Docker Compose (build will run maven inside image):
@@ -39,13 +35,32 @@ docker compose build
 docker compose up
 ```
 
+Automated setup
+---------------
+
+```bash
+bash scripts/setup.sh
+```
+
+The setup script auto-detects Java 21, builds the JAR, starts infra, and launches the service.
+
+Health check
+------------
+
+```
+GET http://localhost:8082/actuator/health
+```
+
+Expected response: `{"status":"UP"}`
+
 Tests
 -----
 
-Unit tests: `mvn test` (some integration tests may be skipped if LocalStack/Mongo not available)
+Unit tests: `mvn test` (integration tests require LocalStack/Mongo)
 
 Notes
 -----
-- The service runs as a worker only (no HTTP endpoints): `spring.main.web-application-type=none`.
-- Use `app.worker.enabled=false` to disable SQS polling (useful for running tests).
+- The SQS queues (`transactions`, `transactions-dlq`) are created automatically when LocalStack starts
+  via `scripts/localstack-init.sh`.
 - Virtual threads are used for per-message processing.
+- Use `app.worker.enabled=false` to disable SQS polling (useful for running tests).

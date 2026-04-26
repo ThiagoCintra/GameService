@@ -5,6 +5,9 @@ ENDPOINT=${AWS_ENDPOINT:-http://localhost:4566}
 ACCOUNT_ID=${AWS_ACCOUNT_ID:-000000000000}
 QUEUE_NAME=${QUEUE_NAME:-transactions}
 DLQ_NAME=${DLQ_NAME:-transactions-dlq}
+export AWS_DEFAULT_REGION=${AWS_REGION:-us-east-1}
+export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-test}
+export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-test}
 
 echo "Creating DLQ $DLQ_NAME on $ENDPOINT"
 aws --endpoint-url="$ENDPOINT" sqs create-queue --queue-name "$DLQ_NAME"
