@@ -1,8 +1,8 @@
 ## multi-stage build: build with maven then run on lightweight JRE
 FROM maven:3.10.1-eclipse-temurin-21 AS build
 WORKDIR /workspace/app
-COPY pom.xml mvnw ./
-COPY .mvn .mvn
+COPY pom.xml ./
+RUN mvn dependency:go-offline -q
 COPY src src
 RUN mvn -DskipTests package -q
 
