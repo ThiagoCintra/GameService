@@ -40,6 +40,12 @@
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 
+		<!-- Web (enables actuator HTTP endpoints) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
 		<!-- JPA (H2 for local run, compatible with other RDBMS) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

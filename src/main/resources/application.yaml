@@ -2,11 +2,6 @@
 spring:
   application:
     name: game-service
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
-    deserialization:
-      fail-on-unknown-properties: false
   data:
     jpa:
       repositories:
@@ -16,7 +11,7 @@ spring:
       port: 27017
       database: game_db
   main:
-    web-application-type: none
+    web-application-type: servlet
   datasource:
     url: jdbc:h2:mem:game_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
@@ -29,7 +24,7 @@ spring:
     open-in-view: false
 
 server:
-  port: 0
+  port: 8082
 
 aws:
   sqs:
