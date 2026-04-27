@@ -14,11 +14,14 @@ public class StartupRunner implements ApplicationRunner {
 
     private final SqsConsumer sqsConsumer;
     private final boolean enabled;
+    private final long startupDelayMs;
 
     public StartupRunner(@org.springframework.beans.factory.annotation.Autowired(required = false) SqsConsumer sqsConsumer,
-                         @org.springframework.beans.factory.annotation.Value("${app.worker.enabled:true}") boolean enabled) {
+                         @org.springframework.beans.factory.annotation.Value("${app.worker.enabled:true}") boolean enabled,
+                         @org.springframework.beans.factory.annotation.Value("${app.worker.startup-delay-ms:5000}") long startupDelayMs) {
         this.sqsConsumer = sqsConsumer;
         this.enabled = enabled;
+        this.startupDelayMs = startupDelayMs;
     }
 
     @Override
@@ -32,7 +35,17 @@ public class StartupRunner implements ApplicationRunner {
             return;
         }
         log.info("Starting GameService worker...");
-        Thread t = new Thread(() -> sqsConsumer.startPolling(), "sqs-poller-main");
+        Thread t = new Thread(() -> {
+            if (startupDelayMs > 0) {
+                log.info("Waiting {}ms before starting SQS polling to allow dependencies to become ready", startupDelayMs);
+                try {
+                    Thread.sleep(startupDelayMs);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            sqsConsumer.startPolling();
+        }, "sqs-poller-main");
         t.setDaemon(true);
         t.start();
     }
