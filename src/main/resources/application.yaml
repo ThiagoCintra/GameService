@@ -12,9 +12,8 @@ spring:
       repositories:
         bootstrap-mode: default
     mongodb:
-      host: localhost
-      port: 27017
-      database: game_db
+      # Prefer explicit URI via environment (SPRING_DATA_MONGODB_URI). Fallback to host/port when not set.
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/game_db}
   # Make this a web application so Actuator HTTP endpoints are available
   main:
     web-application-type: servlet
