@@ -15,8 +15,9 @@ spring:
       host: localhost
       port: 27017
       database: game_db
+  # Make this a web application so Actuator HTTP endpoints are available
   main:
-    web-application-type: none
+    web-application-type: servlet
   datasource:
     url: jdbc:h2:mem:game_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
@@ -29,7 +30,8 @@ spring:
     open-in-view: false
 
 server:
-  port: 0
+  # Bind to a stable HTTP port so actuator can be reached from the host/docker
+  port: 8082
 
 aws:
   sqs:
