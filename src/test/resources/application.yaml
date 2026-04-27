@@ -1,0 +1,17 @@
+app:
+  worker:
+    enabled: false
+
+# Disable Mongo auto-configuration for most tests (use Testcontainers-based tests explicitly)
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+  jpa:
+    open-in-view: false
+
+aws:
+  sqs:
+    endpoint: ""
+    region: us-east-1
+  access-key-id: test
+  secret-access-key: test
